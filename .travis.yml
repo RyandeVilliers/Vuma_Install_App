@@ -1,0 +1,13 @@
+# Everytime we push a change travis will run a python server install docker compose and run script test
+
+language: python
+python:
+  - "3.6"
+
+services:
+  - docker
+
+before_script: pip install docker-compose
+
+script:
+  - docker-compose run app sh -c "python manage.py test && flake8"
