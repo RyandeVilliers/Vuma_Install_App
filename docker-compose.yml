@@ -1,0 +1,19 @@
+# Configuration of all services that make up our project
+
+version: '3'
+
+# Services
+
+services:
+  app:
+    build:
+      context: .
+    ports:
+    # port 8000 on host to 8000 docker
+      - "8000:8000"
+    volumes:
+    # maps app project directory to docker /app directory automatically
+      - ./app:/app
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
+      
