@@ -19,3 +19,10 @@ class ModelTests(TestCase):
         # returns true if password is correct, false if not correct
 
         self.assertTrue(user.check_password(password))
+
+    def test_new_user_email_normalised(self):
+        """Test the email for a new user us normalised"""
+        email = 'test@VUMATEL.COM'
+        user = get_user_model().objects.create_user(email,'test123')
+
+        self.assertEqual(user.email, email.lower())
