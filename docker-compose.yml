@@ -1,0 +1,35 @@
+# Configuration of all services that make up our project
+
+version: '3'
+
+# Services
+
+services:
+  app:
+    build:
+      context: .
+    ports:
+    # port 8000 on host to 8000 docker
+      - "8000:8000"
+    volumes:
+    # maps app project directory to docker /app directory automatically
+      - ./app:/app
+    command: >
+      sh -c "python manage.py wait_for_db &&
+              python manage.py migrate &&
+              python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=app
+      - DB_USER=postgres
+      - DB_PASS=evolve101$$
+    depends_on:
+      - db  # db will start before app
+  
+  db:
+    image: postgres:10-alpine
+    # environment variables
+    environment:
+      - POSTGRES_DB=app
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=evolve101$$
