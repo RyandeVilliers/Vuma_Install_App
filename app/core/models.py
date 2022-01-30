@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
                                         PermissionsMixin
+from django.conf import settings
 
 
 class UserManager(BaseUserManager):
@@ -35,3 +36,17 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 # Customise username email form username to email
     USERNAME_FIELD = 'email'
+
+
+class Status(models.Model):
+    """Status to be used to track progress of installs"""
+    status = models.CharField(max_length=255)
+    notes = models.CharField(max_length=255, blank=True)
+    date = models.DateField(auto_now=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        )
+
+    def __str__(self):
+        return self.status
