@@ -50,3 +50,14 @@ class Status(models.Model):
 
     def __str__(self):
         return self.status
+
+# class Installation(models.Model):
+#     """Installation object"""
+#     user = models.ForeignKey(
+#         settings.AUTH_USER_MODEL,
+#         on_delete=models.CASCADE
+#     )
+
+#     customer_name = models.CharField()
+#     address=models.CharField()
+#     appointment_date=models.DateField(au)
