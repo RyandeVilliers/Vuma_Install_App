@@ -55,3 +55,14 @@ class ModelTests(TestCase):
             status='Installation Requested'
         )
         self.assertEqual(str(status_check), status_check.status)
+
+    def test_installation_str(self):
+        """Test the recipe string representation"""
+        installation = models.Installation.objects.create(
+            user=sample_user(),
+            customer_name='Phillip Moss',
+            address='17 Petunia Street',
+            price=5.00
+
+        )
+        self.assertEqual(str(installation), installation.customer_name)
