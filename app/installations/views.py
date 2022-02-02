@@ -2,7 +2,7 @@ from rest_framework import viewsets, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from core.models import Status
+from core.models import Status, Installation
 
 from installations import serializers
 
@@ -24,3 +24,15 @@ class StatusViewSet(viewsets.GenericViewSet,
     def perform_create(self, serializer):
         """Create a new status"""
         serializer.save(user=self.request.user)
+
+
+class InstallationViewSet(viewsets.ModelViewSet):
+    """Manage Installations in the database"""
+    serializer_class = serializers.InstallationSerializer
+    queryset = Installation.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        """Retrieve the installations for the authenticated user"""
+        return self.queryset.filter(user=self.request.user)

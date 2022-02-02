@@ -6,6 +6,7 @@ from installations import views
 router = DefaultRouter()
 
 router.register('status', views.StatusViewSet)
+router.register('installations', views.InstallationViewSet)
 
 app_name = 'installations'
 
