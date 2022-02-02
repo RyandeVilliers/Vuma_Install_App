@@ -17,6 +17,10 @@ class StatusViewSet(viewsets.GenericViewSet,
     queryset = Status.objects.all()
     serializer_class = serializers.StatusSerializer
 
+    def get_queryset(self):
+        """Return objects for the current authenticated user only"""
+        return self.queryset.filter(user=self.request.user).order_by('-status')
+
     def perform_create(self, serializer):
-        """Create a new tag"""
+        """Create a new status"""
         serializer.save(user=self.request.user)

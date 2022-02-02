@@ -1,8 +1,9 @@
+from unicodedata import name
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import TestCase
 
-from rest_framework import status
+from rest_framework import status as HTTPstatus
 from rest_framework.test import APIClient
 
 from core.models import Status
@@ -21,7 +22,7 @@ class PublicStatusApiTests(TestCase):
         """Test that login is required for retrieving statuses"""
         res = self.client.get(STATUS_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(res.status_code, HTTPstatus.HTTP_401_UNAUTHORIZED)
 
 class PrivateStatusApiTests(TestCase):
     """Test the authorized user status API"""
@@ -44,7 +45,7 @@ class PrivateStatusApiTests(TestCase):
         statuses = Status.objects.all().order_by('-status')
         serializer = StatusSerializer(statuses, many=True)
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, HTTPstatus.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
     def test_create_status_successful(self):
@@ -58,9 +59,23 @@ class PrivateStatusApiTests(TestCase):
         ).exists()
         self.assertTrue(exists)
 
+    def test_status_limited_to_user(self):
+        user2 = get_user_model().objects.create_user(
+            'other@vumatel.com',
+            'testpass'
+        )
+        Status.objects.create(user=user2, status='Installer')
+        status = Status.objects.create(user=self.user, status='Installation Complete')
+
+        res = self.client.get(STATUS_URL)
+
+        self.assertEqual(res.status_code, HTTPstatus.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
+        self.assertEqual(res.data[0]['status'], status.status)
+
     def test_create_tag_invalid(self):
         """Test creating a new tag with invalid payload"""
         payload = {'status': ''}
         res = self.client.post(STATUS_URL, payload)
 
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.status_code, HTTPstatus.HTTP_400_BAD_REQUEST)

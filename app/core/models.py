@@ -60,4 +60,4 @@ class Status(models.Model):
 
 #     customer_name = models.CharField()
 #     address=models.CharField()
-#     appointment_date=models.DateField(au)
+#     appointment_date=models.DateField(auto_created=True)
