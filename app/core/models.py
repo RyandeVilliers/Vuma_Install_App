@@ -51,13 +51,23 @@ class Status(models.Model):
     def __str__(self):
         return self.status
 
-# class Installation(models.Model):
-#     """Installation object"""
-#     user = models.ForeignKey(
-#         settings.AUTH_USER_MODEL,
-#         on_delete=models.CASCADE
-#     )
+class Installation(models.Model):
+    """Installation object"""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    customer_name = models.CharField(max_length=255)
+    address=models.CharField(max_length=255)
+    appointment_date=models.DateField(auto_created=True, null=True)
+    date_created = models.DateField(auto_now_add=True)
+    status = models.ForeignKey(
+        settings.STATUS_MODEL,
+        on_delete=models.PROTECT,
+        null=True
+    )
+    date_modified = models.DateField(auto_now=True)
 
-#     customer_name = models.CharField()
-#     address=models.CharField()
-#     appointment_date=models.DateField(au)
+    def __str__(self):
+        return self.customer_name
+

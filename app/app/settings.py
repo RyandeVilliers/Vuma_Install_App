@@ -127,4 +127,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATUS_MODEL = 'core.Status'
 AUTH_USER_MODEL = 'core.User'

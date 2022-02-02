@@ -62,7 +62,6 @@ class ModelTests(TestCase):
             user=sample_user(),
             customer_name='Phillip Moss',
             address='17 Petunia Street',
-            price=5.00
 
         )
         self.assertEqual(str(installation), installation.customer_name)
