@@ -36,3 +36,10 @@ class InstallationViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Retrieve the installations for the authenticated user"""
         return self.queryset.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        """Return appropriate serializer class"""
+        if self.action == 'retrieve':
+            return serializers.InstallationDetailSerializer
+
+        return self.serializer_class
