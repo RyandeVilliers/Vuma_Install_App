@@ -11,7 +11,7 @@ import datetime
 
 from installations.serializers import InstallationSerializer
 
-INSTALLATION_URL = reverse('installations:installations-list')
+INSTALLATION_URL = reverse('installations:installation-list')
 
 def sample_installation(user, **params):
     """Create and return a sample installation"""
