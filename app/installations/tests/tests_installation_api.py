@@ -17,7 +17,7 @@ def detail_url(installation_id):
     """Return installation detail URL"""
     return reverse('installations:installation-detail', args=[installation_id])
 
-def sample_status(user, status='Installation Complete'):
+def sample_status(user, status='Installation Requested'):
     """Create and return a sample status"""
     return Status.objects.create(user=user, status=status)
 
@@ -98,3 +98,20 @@ class PrivateInstallationApiTests(TestCase):
 
         serializer = InstallationDetailSerializer(installation)
         self.assertEqual(res.data, serializer.data)
+
+    def test_create_installation(self):
+        """Test creating installation"""
+        payload = {
+        'customer_name': 'Phillip Moss',
+        'address': '17 Petunia Street',
+        'appointment_date': datetime.date(2022, 10, 22),
+        'status': 'Installation Requested'
+    }
+        res = self.client.post(INSTALLATION_URL, payload)
+
+        self.assertEqual(res.status_code, HTTPstatus.HTTP_201_CREATED)
+        installation = Installation.objects.get(id=res.data['id'])
+        for key in payload.keys():
+            # review
+            self.assertEqual(payload[key], getattr(installation, key))
+
