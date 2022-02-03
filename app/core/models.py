@@ -1,6 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
-                                        PermissionsMixin
+from django.contrib.auth.models import (
+    AbstractBaseUser, 
+    BaseUserManager, 
+    PermissionsMixin
+    )
 from django.conf import settings
 
 
@@ -28,6 +31,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     """Custom user model that supports using email instead of username"""
+
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
@@ -36,20 +40,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 # Customise username email form username to email
     USERNAME_FIELD = 'email'
-
-
-class Status(models.Model):
-    """Status to be used to track progress of installs"""
-    status = models.CharField(max_length=255)
-    notes = models.CharField(max_length=255, blank=True)
-    date = models.DateField(auto_now=True)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        )
-
-    def __str__(self):
-        return self.status
 
 class Installation(models.Model):
     """Installation object"""
@@ -71,3 +61,43 @@ class Installation(models.Model):
     def __str__(self):
         return self.customer_name
 
+
+# class Status(models.Model):
+#     """Status to be used to track progress of installs"""
+
+    # status = models.CharField(
+    #     max_length=255, default=STATUS_CHOICES[0], choices=STATUS_CHOICES
+    # )
+    # notes = models.CharField(max_length=255, blank=True)
+    # date = models.DateField(auto_now=True)
+    # install = models.ForeignKey(
+    #     Installation,
+    #     related_name='status',
+    #     on_delete=models.CASCADE,
+    #     default=None,
+    #     null=True,
+    # )
+
+    # def __str__(self) -> str:
+    #     return self.status
+
+class Status(models.Model):
+    """Status to be used to track progress of installs"""
+    STATUS_CHOICES = [
+    ('Installation Requested', 'Installation Requested'),
+    ('Installation in Progress', 'Installation in Progress'),
+    ('Installation Complete', 'Installation Complete'),
+    ('Installation Rejected', 'Installation Rejected')
+]
+    status = models.CharField(
+        max_length=255, default=STATUS_CHOICES[0], choices=STATUS_CHOICES
+    )
+    notes = models.CharField(max_length=255, blank=True)
+    date = models.DateField(auto_now=True)
+    user = models.ForeignKey(
+       settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+         )
+
+    def __str__(self):
+         return self.status
