@@ -5,6 +5,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status as HTTPstatus
 
+
 from core.models import Installation, Status
 
 import datetime
@@ -17,9 +18,9 @@ def detail_url(installation_id):
     """Return installation detail URL"""
     return reverse('installations:installation-detail', args=[installation_id])
 
-def sample_status(user, status='Installation Requested'):
+def sample_status(user, status = Status.STATUS_CHOICES[0][0]):
     """Create and return a sample status"""
-    return Status.objects.create(user=user, status=status)
+    return Status.objects.create(user=user, status=Status.STATUS_CHOICES[0][0])
 
 def sample_installation(user, **params):
     """Create and return a sample installation"""
@@ -105,7 +106,7 @@ class PrivateInstallationApiTests(TestCase):
         'customer_name': 'Phillip Moss',
         'address': '17 Petunia Street',
         'appointment_date': datetime.date(2022, 10, 22),
-        'status': 'Installation Requested'
+        'status': Status.STATUS_CHOICES[0][0]
     }
         res = self.client.post(INSTALLATION_URL, payload)
 
@@ -115,3 +116,35 @@ class PrivateInstallationApiTests(TestCase):
             # review
             self.assertEqual(payload[key], getattr(installation, key))
 
+    def test_partial_update_installation(self):
+        """Test updating an install with patch"""
+        installation = sample_installation(user=self.user)
+        new_status = sample_status(self.user, status=Status.STATUS_CHOICES[1][0])
+
+        payload = {'customer_name': 'Fred Flintstone','status': [new_status.id]}
+        url = detail_url(installation.id)
+        self.client.patch(url, payload)
+
+        installation.refresh_from_db()
+        self.assertEqual(installation.customer_name, payload['customer_name'])
+        status = installation.status.all()
+        self.assertEqual(len(status), 1)
+        self.assertIn(new_status, status)
+    
+    def test_full_update_installation(self):
+        """Test updating an installation with a put"""
+        installation = sample_installation(user=self.user)
+        payload = {
+            'customer_name': 'Fred Flintstone',
+            'appointment_date': datetime.date(2022, 4, 3),
+            'address': '2 Longdon Avenue',
+            'status': Status.STATUS_CHOICES[2][0]
+        }
+        url = detail_url(installation.id)
+        self.client.put(url, payload)
+
+        installation.refresh_from_db()
+        self.assertEqual(installation.customer_name, payload['customer_name'])
+        self.assertEqual(installation.appointment_date, payload['appointment_date'])
+        self.assertEqual(installation.address, payload['address'])
+        self.assertEqual(installation.status, payload['status'])       

@@ -61,12 +61,6 @@ class Installation(models.Model):
     def __str__(self):
         return self.customer_name
 
-STATUS_CHOICES = [
-    ('Installation Requested', 'Installation Requested'),
-    ('Installation in Progress', 'Installation in Progress'),
-    ('Installation Complete', 'Installation Complete'),
-    ('Installation Rejected', 'Installation Rejected')
-]
 
 # class Status(models.Model):
 #     """Status to be used to track progress of installs"""
@@ -89,6 +83,12 @@ STATUS_CHOICES = [
 
 class Status(models.Model):
     """Status to be used to track progress of installs"""
+    STATUS_CHOICES = [
+    ('Installation Requested', 'Installation Requested'),
+    ('Installation in Progress', 'Installation in Progress'),
+    ('Installation Complete', 'Installation Complete'),
+    ('Installation Rejected', 'Installation Rejected')
+]
     status = models.CharField(
         max_length=255, default=STATUS_CHOICES[0], choices=STATUS_CHOICES
     )
