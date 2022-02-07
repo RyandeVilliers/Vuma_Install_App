@@ -8,11 +8,12 @@ class StatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Status
         fields = ('id', 'status', 'notes', 'date', 'user')
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
 class InstallationSerializer(serializers.ModelSerializer):
     """Serialize an installation"""
+    
     status = serializers.PrimaryKeyRelatedField(
         many=False,
         queryset=Installation.objects.all()
@@ -22,7 +23,7 @@ class InstallationSerializer(serializers.ModelSerializer):
         model = Installation
         fields = ('id', 'customer_name', 'address', 'appointment_date', 'date_created', 
                     'date_modified', 'status')
-        read_only_fields = ('id',)
+        read_only_fields = ('id', )
 
 class InstallationDetailSerializer(InstallationSerializer):
     """Serialize installation detail"""

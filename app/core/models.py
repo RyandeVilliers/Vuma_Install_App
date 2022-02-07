@@ -90,7 +90,7 @@ class Status(models.Model):
     ('Installation Rejected', 'Installation Rejected')
 ]
     status = models.CharField(
-        max_length=255, default=STATUS_CHOICES[0], choices=STATUS_CHOICES
+        max_length=255, default=STATUS_CHOICES[0][0], choices=STATUS_CHOICES
     )
     notes = models.CharField(max_length=255, blank=True)
     date = models.DateField(auto_now=True)
