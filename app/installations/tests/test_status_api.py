@@ -1,4 +1,3 @@
-from unicodedata import name
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import TestCase
@@ -50,7 +49,7 @@ class PrivateStatusApiTests(TestCase):
 
     def test_create_status_successful(self):
         """Test creating a new status"""
-        payload = {'status': 'test_status'}
+        payload = {'status':Status.STATUS_CHOICES[0][0]}
         self.client.post(STATUS_URL, payload)
 
         exists = Status.objects.filter(
@@ -73,9 +72,9 @@ class PrivateStatusApiTests(TestCase):
         self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data[0]['status'], status.status)
 
-    def test_create_tag_invalid(self):
-        """Test creating a new tag with invalid payload"""
-        payload = {'status': ''}
+    def test_create_status_invalid(self):
+        """Test creating a new status with invalid payload"""
+        payload = {'status': ' '}
         res = self.client.post(STATUS_URL, payload)
 
         self.assertEqual(res.status_code, HTTPstatus.HTTP_400_BAD_REQUEST)
