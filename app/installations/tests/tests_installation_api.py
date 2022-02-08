@@ -24,11 +24,12 @@ def sample_status(user, status = Status.STATUS_CHOICES[0][0]):
 
 def sample_installation(user, **params):
     """Create and return a sample installation"""
+    s = sample_status(user=user)
     defaults = {
         'customer_name': 'Phillip Moss',
         'address': '17 Petunia Street',
         'appointment_date': datetime.date(2022, 10, 22),
-        'status': sample_status(user=user)
+        'status': 
         
     }
     defaults.update(params)
@@ -103,21 +104,23 @@ class PrivateInstallationApiTests(TestCase):
 
     def test_create_installation(self):
         """Test creating installation"""
+        status1 = sample_status(user=self.user)
         status2 = sample_status(user=self.user, status=Status.STATUS_CHOICES[1][0])
         payload = {
         'customer_name': 'Phillip Moss',
         'address': '17 Petunia Street',
         'appointment_date': datetime.date(2022, 10, 22),
-        'status': [status2.id]
+        'status': [status1.id, status2.id]
     }
         res = self.client.post(INSTALLATION_URL, payload)
 
         self.assertEqual(res.status_code, HTTPstatus.HTTP_201_CREATED)
         installation = Installation.objects.get(id=res.data['id'])
         statuses = installation.status.all()
-        self.assertEqual(statuses.count(), 1)
+        self.assertEqual(statuses.count(), 2)
+        self.assertIn(status1, statuses)
         self.assertIn(status2, statuses)
-
+        
         # for key in payload.keys():
         #     # review
         #     self.assertEqual(payload[key], getattr(installation, key))

@@ -36,8 +36,9 @@ class PrivateStatusApiTests(TestCase):
 
     def test_retrieve_statuses(self):
         """Test retrieving statuses"""
-        Status.objects.create(user=self.user, status='Installation Required')
-        Status.objects.create(user=self.user, status='Installation Complete')
+        Status.objects.create(user=self.user,status='Installation Required')
+        Status.objects.create(user=self.user,status='Installation Complete')
+        # user=self.user, 2
 
         res = self.client.get(STATUS_URL)
 
@@ -64,7 +65,8 @@ class PrivateStatusApiTests(TestCase):
             'testpass'
         )
         Status.objects.create(user=user2, status='Installer')
-        status = Status.objects.create(user=self.user, status='Installation Complete')
+        status = Status.objects.create(user=self.user,status='Installation Complete')
+        # user=self.user,
 
         res = self.client.get(STATUS_URL)
 

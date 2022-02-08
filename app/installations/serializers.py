@@ -15,8 +15,8 @@ class InstallationSerializer(serializers.ModelSerializer):
     """Serialize an installation"""
     
     status = serializers.PrimaryKeyRelatedField(
-        many=False,
-        queryset=Installation.objects.all()
+        many=True,
+        queryset=Status.objects.all()
     )
 
     class Meta:
