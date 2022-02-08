@@ -10,27 +10,30 @@ from core.models import Installation, Status
 
 import datetime
 
-from installations.serializers import InstallationSerializer, InstallationDetailSerializer
+from installations.serializers import (
+    InstallationSerializer,
+    InstallationDetailSerializer,
+)
 
-INSTALLATION_URL = reverse('installations:installation-list')
+INSTALLATION_URL = reverse("installations:installation-list")
+
 
 def detail_url(installation_id):
     """Return installation detail URL"""
-    return reverse('installations:installation-detail', args=[installation_id])
+    return reverse("installations:installation-detail", args=[installation_id])
 
-def sample_status(user, status = Status.STATUS_CHOICES[0][0]):
+
+def sample_status(user, status=Status.STATUS_CHOICES[0][0]):
     """Create and return a sample status"""
     return Status.objects.create(user=user, status=status)
 
+
 def sample_installation(user, **params):
     """Create and return a sample installation"""
-    s = sample_status(user=user)
     defaults = {
-        'customer_name': 'Phillip Moss',
-        'address': '17 Petunia Street',
-        'appointment_date': datetime.date(2022, 10, 22),
-        'status': 
-        
+        "customer_name": "Phillip Moss",
+        "address": "17 Petunia Street",
+        "appointment_date": datetime.date(2022, 10, 22),
     }
     defaults.update(params)
 
@@ -56,8 +59,7 @@ class PrivateInstallationApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
-            'ryan@vumatel.co.za',
-            'testpass'
+            "ryan@vumatel.co.za", "testpass"
         )
         self.client.force_authenticate(self.user)
 
@@ -68,7 +70,7 @@ class PrivateInstallationApiTests(TestCase):
 
         res = self.client.get(INSTALLATION_URL)
 
-        installations = Installation.objects.all().order_by('-id')
+        installations = Installation.objects.all().order_by("-id")
         serializer = InstallationSerializer(installations, many=True)
         self.assertEqual(res.status_code, HTTPstatus.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
@@ -76,8 +78,7 @@ class PrivateInstallationApiTests(TestCase):
     def test_installation_limited_to_user(self):
         """Test retrieving installations for user"""
         user2 = get_user_model().objects.create_user(
-            'ryantest@vumatel.co.za',
-            'password123'
+            "ryantest@vumatel.co.za", "password123"
         )
         sample_installation(user=user2)
         sample_installation(user=self.user)
@@ -107,20 +108,20 @@ class PrivateInstallationApiTests(TestCase):
         status1 = sample_status(user=self.user)
         status2 = sample_status(user=self.user, status=Status.STATUS_CHOICES[1][0])
         payload = {
-        'customer_name': 'Phillip Moss',
-        'address': '17 Petunia Street',
-        'appointment_date': datetime.date(2022, 10, 22),
-        'status': [status1.id, status2.id]
-    }
+            "customer_name": "Phillip Moss",
+            "address": "17 Petunia Street",
+            "appointment_date": datetime.date(2022, 10, 22),
+            "status": [status1.id, status2.id],
+        }
         res = self.client.post(INSTALLATION_URL, payload)
 
         self.assertEqual(res.status_code, HTTPstatus.HTTP_201_CREATED)
-        installation = Installation.objects.get(id=res.data['id'])
+        installation = Installation.objects.get(id=res.data["id"])
         statuses = installation.status.all()
         self.assertEqual(statuses.count(), 2)
         self.assertIn(status1, statuses)
         self.assertIn(status2, statuses)
-        
+
         # for key in payload.keys():
         #     # review
         #     self.assertEqual(payload[key], getattr(installation, key))
@@ -130,30 +131,33 @@ class PrivateInstallationApiTests(TestCase):
         installation = sample_installation(user=self.user)
         new_status = sample_status(self.user, status=Status.STATUS_CHOICES[1][0])
 
-        payload = {'customer_name': 'Fred Flintstone','status': [new_status.id]}
+        payload = {"customer_name": "Fred Flintstone", "status": [new_status.id]}
         url = detail_url(installation.id)
         self.client.patch(url, payload)
 
         installation.refresh_from_db()
-        self.assertEqual(installation.customer_name, payload['customer_name'])
+        self.assertEqual(installation.customer_name, payload["customer_name"])
         status = installation.status.all()
         self.assertEqual(len(status), 1)
         self.assertIn(new_status, status)
-    
+
     def test_full_update_installation(self):
         """Test updating an installation with a put"""
         installation = sample_installation(user=self.user)
         payload = {
-            'customer_name': 'Fred Flintstone',
-            'appointment_date': datetime.date(2022, 4, 3),
-            'address': '2 Longdon Avenue',
-            'status': Status.STATUS_CHOICES[2][0]
+            "customer_name": "Fred Flintstone",
+            "appointment_date": datetime.date(2022, 4, 3),
+            "address": "2 Longdon Avenue",
+            "status": Status.STATUS_CHOICES[2][0],
         }
         url = detail_url(installation.id)
-        self.client.put(url, payload)
+        self.client.patch(url, payload)
 
         installation.refresh_from_db()
-        self.assertEqual(installation.customer_name, payload['customer_name'])
-        self.assertEqual(installation.appointment_date, payload['appointment_date'])
-        self.assertEqual(installation.address, payload['address'])
-        self.assertEqual(installation.status, payload['status'])       
+        self.assertEqual(installation.customer_name, payload["customer_name"])
+        self.assertEqual(installation.appointment_date, payload["appointment_date"])
+        self.assertEqual(installation.address, payload["address"])
+        import ipdb
+
+        ipdb.set_trace()
+        self.assertEqual(installation.status, payload["status"])
