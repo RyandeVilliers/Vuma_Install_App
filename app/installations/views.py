@@ -6,10 +6,12 @@ from core.models import Status, Installation
 
 from installations import serializers
 
-class StatusViewSet(viewsets.GenericViewSet, 
-                    mixins.ListModelMixin, 
-                    mixins.CreateModelMixin):
+
+class StatusViewSet(
+    viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin
+):
     """Manage statuses in the database"""
+
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     queryset = Status.objects.all()
@@ -17,7 +19,7 @@ class StatusViewSet(viewsets.GenericViewSet,
 
     def get_queryset(self):
         """Return objects for the current authenticated user only"""
-        return self.queryset.filter(user=self.request.user).order_by('-status')
+        return self.queryset.filter(user=self.request.user).order_by("-status")
 
     def perform_create(self, serializer):
         """Create a new status"""
@@ -26,6 +28,7 @@ class StatusViewSet(viewsets.GenericViewSet,
 
 class InstallationViewSet(viewsets.ModelViewSet):
     """Manage Installations in the database"""
+
     serializer_class = serializers.InstallationSerializer
     queryset = Installation.objects.all()
     authentication_classes = (TokenAuthentication,)
@@ -37,7 +40,7 @@ class InstallationViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         """Return appropriate serializer class"""
-        if self.action == 'retrieve':
+        if self.action == "retrieve":
             return serializers.InstallationDetailSerializer
 
         return self.serializer_class
@@ -45,3 +48,9 @@ class InstallationViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Create a new Installation"""
         serializer.save(user=self.request.user)
+
+
+class InstallNViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.InstallationSerializerN
+    queryset = Installation.objects.all()
+    model = Installation
