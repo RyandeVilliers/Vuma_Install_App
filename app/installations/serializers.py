@@ -7,8 +7,8 @@ class StatusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Status
-        fields = ('id', 'status', 'notes', 'date', 'user')
-        read_only_fields = ('id', 'user')
+        fields = ('id', 'status', 'notes', 'date')
+        read_only_fields = ('id',)
 
 
 class InstallationSerializer(serializers.ModelSerializer):

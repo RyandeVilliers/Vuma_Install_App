@@ -17,11 +17,11 @@ class StatusViewSet(viewsets.GenericViewSet,
 
     def get_queryset(self):
         """Return objects for the current authenticated user only"""
-        return self.queryset.filter(user=self.request.user).order_by('-status')
+        return self.queryset.order_by('-status')
 
     def perform_create(self, serializer):
         """Create a new status"""
-        serializer.save(user=self.request.user)
+        serializer.save()
 
 
 class InstallationViewSet(viewsets.ModelViewSet):
