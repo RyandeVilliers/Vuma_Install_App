@@ -80,14 +80,6 @@ class Status(models.Model):
         default=None,
         null=True,
         )
-    # user = models.ForeignKey(
-    #     settings.AUTH_USER_MODEL,
-    #      on_delete=models.CASCADE,
-    #      default=None,
-    #      null=True
-    #       )
-    
-    
 
     def __str__(self) -> str:
         return self.status

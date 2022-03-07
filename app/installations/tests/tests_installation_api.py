@@ -159,3 +159,28 @@ class PrivateInstallationApiTests(TestCase):
         self.assertEqual(installation.address, payload['address'])
         status = installation.status.all()
         self.assertIn(new_status, status)
+
+    def test_filter_recipes_by_status(self):
+        """Test returning installations with specific status"""
+        installation1 = sample_installation(user=self.user, customer_name='Robin de Villiers')
+        installation2 = sample_installation(user=self.user, customer_name='Ryan de Villiers')
+        status1 = sample_status(status=Status.STATUS_CHOICES[1][0])
+        status2 = sample_status(status=Status.STATUS_CHOICES[0][0])
+        installation1.status.add(status1)
+        installation2.status.add(status2)
+        installation3 = sample_installation(user=self.user, customer_name='Tania de Villiers')
+
+        res = self.client.get(
+            INSTALLATION_URL,
+            {'status': f'{status1.id},{status2.id}'}
+        )
+
+        serializer1 = InstallationSerializer(installation1)
+        serializer2 = InstallationSerializer(installation2)
+        serializer3 = InstallationSerializer(installation3)
+
+        self.assertIn(serializer1.data, res.data)
+        self.assertIn(serializer2.data, res.data)
+        self.assertNotIn(serializer3.data, res.data)
+
+    
