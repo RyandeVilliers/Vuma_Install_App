@@ -1,14 +1,26 @@
+from django.shortcuts import render
+
+from rest_framework.response import Response
 from rest_framework import generics, authentication, permissions
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
+
 
 from user.serializers import UserSerializer, AuthTokenSerializer
 
 
 class CreateUserView(generics.CreateAPIView):
     """Create a new user in the system"""
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'user/sign_up.html'
 
     serializer_class = UserSerializer
+
+    def get(self, request):
+        serializer_class = UserSerializer
+        return Response({'serializer_class': serializer_class})
+
 
 
 class CreateTokenView(ObtainAuthToken):

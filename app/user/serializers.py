@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model, authenticate
+from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _  # translate function
 
 from rest_framework import serializers
@@ -16,6 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create a new user with encrypted password and return it"""
+
         return get_user_model().objects.create_user(**validated_data)
 
     def update(self, instance, validated_data):
