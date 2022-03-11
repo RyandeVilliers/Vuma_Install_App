@@ -51,11 +51,6 @@ class Installation(models.Model):
     address=models.CharField(max_length=255)
     appointment_date=models.DateField(auto_created=True, null=True)
     date_created = models.DateField(auto_now_add=True)
-    # status = models.ForeignKey(
-    #     settings.STATUS_MODEL,
-    #     on_delete=models.PROTECT,
-    #     null=True
-    # )
     date_modified = models.DateField(auto_now=True)
 
     def __str__(self):
@@ -74,42 +69,17 @@ class Status(models.Model):
     ]
 
     status = models.CharField(
-        max_length=255, default=STATUS_CHOICES[0], choices=STATUS_CHOICES
+        max_length=255, default=STATUS_CHOICES[0][0], choices=STATUS_CHOICES
     )
     notes = models.CharField(max_length=255, blank=True)
     date = models.DateField(auto_now=True)
-    install = models.ForeignKey(
+    installation = models.ForeignKey(
         Installation,
         related_name='status',
         on_delete=models.CASCADE,
         default=None,
         null=True,
         )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-         on_delete=models.CASCADE,
-         default=None,
-         null=True
-          )
-    
-    
 
     def __str__(self) -> str:
         return self.status
-
-# class Status(models.Model):
-#     """Status to be used to track progress of installs"""
-    
-
-    # status = models.CharField(
-    #     max_length=255, default=STATUS_CHOICES[0][0], choices=STATUS_CHOICES
-    # )
-    # notes = models.CharField(max_length=255, blank=True)
-    # date = models.DateField(auto_now=True)
-    # user = models.ForeignKey(
-    #    settings.AUTH_USER_MODEL,
-    #     on_delete=models.CASCADE
-    #      )
-
-    # def __str__(self):
-    #      return self.status

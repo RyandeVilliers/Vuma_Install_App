@@ -36,8 +36,8 @@ class PrivateStatusApiTests(TestCase):
 
     def test_retrieve_statuses(self):
         """Test retrieving statuses"""
-        Status.objects.create(user=self.user,status='Installation Required')
-        Status.objects.create(user=self.user,status='Installation Complete')
+        Status.objects.create(status='Installation Required')
+        Status.objects.create(status='Installation Complete')
         # user=self.user, 2
 
         res = self.client.get(STATUS_URL)
@@ -54,25 +54,10 @@ class PrivateStatusApiTests(TestCase):
         self.client.post(STATUS_URL, payload)
 
         exists = Status.objects.filter(
-            user=self.user,
+            # user=self.user,
             status=payload['status']
         ).exists()
         self.assertTrue(exists)
-
-    def test_status_limited_to_user(self):
-        user2 = get_user_model().objects.create_user(
-            'other@vumatel.com',
-            'testpass'
-        )
-        Status.objects.create(user=user2, status='Installer')
-        status = Status.objects.create(user=self.user,status='Installation Complete')
-        # user=self.user,
-
-        res = self.client.get(STATUS_URL)
-
-        self.assertEqual(res.status_code, HTTPstatus.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]['status'], status.status)
 
     def test_create_status_invalid(self):
         """Test creating a new status with invalid payload"""

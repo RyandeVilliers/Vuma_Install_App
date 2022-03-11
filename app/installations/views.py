@@ -17,11 +17,11 @@ class StatusViewSet(viewsets.GenericViewSet,
 
     def get_queryset(self):
         """Return objects for the current authenticated user only"""
-        return self.queryset.filter(user=self.request.user).order_by('-status')
+        return self.queryset.order_by('-status')
 
     def perform_create(self, serializer):
         """Create a new status"""
-        serializer.save(user=self.request.user)
+        serializer.save()
 
 
 class InstallationViewSet(viewsets.ModelViewSet):
@@ -31,9 +31,19 @@ class InstallationViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
+    def _params_to_ints(self, qs):
+        """Convert a list of string IDs to a list of integers"""
+        return [int(str_id) for str_id in qs.split(',')]
+
     def get_queryset(self):
         """Retrieve the installations for the authenticated user"""
-        return self.queryset.filter(user=self.request.user)
+        status = self.request.query_params.get('status')
+        queryset = self.queryset
+        if status:
+            status_ids = self._params_to_ints(status)
+            queryset = queryset.filter(status__id__in=status_ids)
+        return queryset.filter(user=self.request.user)
+        
 
     def get_serializer_class(self):
         """Return appropriate serializer class"""
@@ -45,3 +55,8 @@ class InstallationViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Create a new Installation"""
         serializer.save(user=self.request.user)
+
+    def partial_update(self, request, *args, **kwargs):
+        print(args)
+        print(request.body.json())
+        return super().partial_update(request, *args, **kwargs)

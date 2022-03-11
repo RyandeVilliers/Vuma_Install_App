@@ -51,7 +51,6 @@ class ModelTests(TestCase):
     def test_status_str(self):
         """Test the status string representation"""
         status_check = models.Status.objects.create(
-            user=sample_user(),
             status='Installation Requested'
         )
         self.assertEqual(str(status_check), status_check.status)

@@ -24,17 +24,14 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('email', 'password1', 'password2')
             }),
     )
-# start
-# class StatusAdminInline(admin.TabularInline):
-#     model = models.Status
 
-# class InstallAdmin(admin.ModelAdmin):
-#     inlines = (StatusAdminInline,)
-# end
+class StatusInline(admin.TabularInline):
+    model = models.Status
+
+class InstallAdmin(admin.ModelAdmin):
+    inlines = (StatusInline,)
 
 admin.site.register(models.User, UserAdmin)
-admin.site.register(models.Status)
-admin.site.register(models.Installation)
-#
-# admin.site.register(models.Installation, InstallAdmin)
+
+admin.site.register(models.Installation, InstallAdmin)
 

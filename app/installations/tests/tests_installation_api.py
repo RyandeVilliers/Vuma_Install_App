@@ -18,18 +18,18 @@ def detail_url(installation_id):
     """Return installation detail URL"""
     return reverse('installations:installation-detail', args=[installation_id])
 
-def sample_status(user, status = Status.STATUS_CHOICES[0][0]):
+def sample_status( status = Status.STATUS_CHOICES[0][0]):
     """Create and return a sample status"""
-    return Status.objects.create(user=user, status=status)
+    return Status.objects.create(status=status)
 
 def sample_installation(user, **params):
     """Create and return a sample installation"""
-    s = sample_status(user=user)
+    
     defaults = {
         'customer_name': 'Phillip Moss',
         'address': '17 Petunia Street',
         'appointment_date': datetime.date(2022, 10, 22),
-        'status': 
+        # 'status': status
         
     }
     defaults.update(params)
@@ -104,8 +104,8 @@ class PrivateInstallationApiTests(TestCase):
 
     def test_create_installation(self):
         """Test creating installation"""
-        status1 = sample_status(user=self.user)
-        status2 = sample_status(user=self.user, status=Status.STATUS_CHOICES[1][0])
+        status1 = sample_status()
+        status2 = sample_status(status=Status.STATUS_CHOICES[1][0])
         payload = {
         'customer_name': 'Phillip Moss',
         'address': '17 Petunia Street',
@@ -128,7 +128,7 @@ class PrivateInstallationApiTests(TestCase):
     def test_partial_update_installation(self):
         """Test updating an install with patch"""
         installation = sample_installation(user=self.user)
-        new_status = sample_status(self.user, status=Status.STATUS_CHOICES[1][0])
+        new_status = sample_status(status=Status.STATUS_CHOICES[1][0])
 
         payload = {'customer_name': 'Fred Flintstone','status': [new_status.id]}
         url = detail_url(installation.id)
@@ -143,11 +143,12 @@ class PrivateInstallationApiTests(TestCase):
     def test_full_update_installation(self):
         """Test updating an installation with a put"""
         installation = sample_installation(user=self.user)
+        new_status = sample_status(status=Status.STATUS_CHOICES[1][0])
         payload = {
             'customer_name': 'Fred Flintstone',
             'appointment_date': datetime.date(2022, 4, 3),
             'address': '2 Longdon Avenue',
-            'status': Status.STATUS_CHOICES[2][0]
+            'status': [new_status.id]
         }
         url = detail_url(installation.id)
         self.client.put(url, payload)
@@ -156,4 +157,30 @@ class PrivateInstallationApiTests(TestCase):
         self.assertEqual(installation.customer_name, payload['customer_name'])
         self.assertEqual(installation.appointment_date, payload['appointment_date'])
         self.assertEqual(installation.address, payload['address'])
-        self.assertEqual(installation.status, payload['status'])       
+        status = installation.status.all()
+        self.assertIn(new_status, status)
+
+    def test_filter_recipes_by_status(self):
+        """Test returning installations with specific status"""
+        installation1 = sample_installation(user=self.user, customer_name='Robin de Villiers')
+        installation2 = sample_installation(user=self.user, customer_name='Ryan de Villiers')
+        status1 = sample_status(status=Status.STATUS_CHOICES[1][0])
+        status2 = sample_status(status=Status.STATUS_CHOICES[0][0])
+        installation1.status.add(status1)
+        installation2.status.add(status2)
+        installation3 = sample_installation(user=self.user, customer_name='Tania de Villiers')
+
+        res = self.client.get(
+            INSTALLATION_URL,
+            {'status': f'{status1.id},{status2.id}'}
+        )
+
+        serializer1 = InstallationSerializer(installation1)
+        serializer2 = InstallationSerializer(installation2)
+        serializer3 = InstallationSerializer(installation3)
+
+        self.assertIn(serializer1.data, res.data)
+        self.assertIn(serializer2.data, res.data)
+        self.assertNotIn(serializer3.data, res.data)
+
+    
