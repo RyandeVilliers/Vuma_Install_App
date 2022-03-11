@@ -14,12 +14,14 @@ class CreateUserView(generics.CreateAPIView):
     """Create a new user in the system"""
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'user/sign_up.html'
+    
 
     serializer_class = UserSerializer
 
     def get(self, request):
         serializer_class = UserSerializer
-        return Response({'serializer_class': serializer_class})
+        return render(request, template_name = 'user/sign_up.html', context={'serializer_class': serializer_class})
+
 
 
 
@@ -38,3 +40,6 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):  # Method overide
         """Retrieve and return authenticated user"""
         return self.request.user
+
+
+
