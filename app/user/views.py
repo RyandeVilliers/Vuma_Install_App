@@ -30,6 +30,10 @@ class CreateTokenView(ObtainAuthToken):
     serializer_class = AuthTokenSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
+    # def get(self, request):
+    #     serializer_class = UserSerializer
+    #     return render(request, template_name = 'user/create_token.html', context={'serializer_class': serializer_class})
+
 
 class ManageUserView(generics.RetrieveUpdateAPIView):
     """Manage the authenticated user"""

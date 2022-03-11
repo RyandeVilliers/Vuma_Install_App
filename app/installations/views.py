@@ -55,3 +55,8 @@ class InstallationViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Create a new Installation"""
         serializer.save(user=self.request.user)
+
+    def partial_update(self, request, *args, **kwargs):
+        print(args)
+        print(request.body.json())
+        return super().partial_update(request, *args, **kwargs)
